@@ -15,40 +15,46 @@ import pygame
 
 
 run_loop = True
+FPS = 60
 
 
 class EyeLid(pygame.sprite.Sprite):
     def __init__(self):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("images/eye_lid.png")
-        self.rect = self.image.get_rect()
-        self.open()
-        self.blinking_opening = False
-        self.blinking_closing = False
-        self.blink_speed = 5
-        self.blink()
-    
-    def update(self):
-        if self.blinking_closing:
-            self.rect.y += self.blink_speed
-            if self.rect.y >= 0:
-                self.blinking_closing = False
-                self.blinking_opening = True
-        elif self.blinking_opening:
-            self.rect.y -= self.blink_speed
-            if self.rect.y < -self.image.get_size()[1]:
-                self.blinking_closing = False
-                self.blinking_opening = False
+        # self.image = pygame.image.load("images/eye_lid.png")
+        # self.rect = self.image.get_rect()
+        self.rect = (0,0,8,8)
 
-    def open(self):
-        self.rect.y = -(self.image.get_size()[1])
+        self.blink()
+
+        current_time = 0
+        animation_time = 0.1
+        index = 0
+        blinking = False
+        frames = [...]
+    
+    def update(self, dt):
+        update_blink(dt)
+
+    def update_blink(self, dt)
+        self.current_time += dt
+        if not self.blinking: return
+        # run frame if enough time has elapsed between frames
+        if self.current_time  >= self.animation_time
+            self.current_time = 0
+            self.index = (self.index + 1)# % len(self.frames)
+            if self.index > self.frames
+                self.index = 0
+                blinking = False
+            self.image = self.frames[self.index]
+
     
     def close(self):
         self.rect.y = 0
 
     def blink(self):
-        self.blinking_closing = True
+        self.blinking = True
 
 
 def main():
@@ -116,6 +122,8 @@ def main():
         keyboard.on_press(headless_key_pressed)
 
     while run_loop:
+        dt = clock.tick(FPS) / 1000
+
         if pygame.event.get(pygame.QUIT): break
         pygame.event.pump()
 
@@ -140,7 +148,7 @@ def main():
         main_surface.blit(eye_ball, eye_ball_pos)
         main_surface.blit(eye_alpha_overlay, (0, 0))
 
-        all_sprites.update()
+        all_sprites.update(dt)
         all_sprites.draw(main_surface)
 
         main_surface.blit(eye_mask, (0, 0))
@@ -164,7 +172,6 @@ def main():
         # Now the surface is ready, tell pygame to display it!
         pygame.display.flip()
 
-        clock.tick(10)
 
     pygame.quit()     # Once we leave the loop, close the window.
 
